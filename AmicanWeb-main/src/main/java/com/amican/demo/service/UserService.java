@@ -36,6 +36,7 @@ public class UserService implements IUserService {
         validateUniqueUsername(userDto.getUsername());
 
         user = convertToEntity(userDto);
+
         user.setFecha(LocalDate.now());
         User savedUser = userRepository.save(user);
 

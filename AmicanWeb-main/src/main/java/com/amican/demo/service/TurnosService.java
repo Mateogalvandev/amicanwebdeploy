@@ -95,27 +95,92 @@ public class TurnosService implements ITurnosService {
 
     @Transactional
     public void deleteById(Long id) {
+        Turnos turno = turnosRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Turno no encontrado"));
+
+        // Limpiar relaciones con mascotas
+        if (turno.getMascotasList() != null) {
+            for (Mascotas mascota : turno.getMascotasList()) {
+                mascota.getTurnosMascotas().remove(turno);
+            }
+            turno.getMascotasList().clear();
+        }
+
+        // Limpiar relaciones con dueños (si aplica)
+        if (turno.getDueniosList() != null) {
+            for (Duenios duenio : turno.getDueniosList()) {
+                duenio.getTurnosDuenios().remove(turno);
+            }
+            turno.getDueniosList().clear();
+        }
+
+        // Ahora sí, eliminar el turno
         turnosRepository.deleteById(id);
     }
 
     @Override
     @Transactional
     public Turnos updateTurno(Long id, TurnoDto turnoDto) {
+        // 1. Obtener el turno existente
         Turnos existingTurno = turnosRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Turno no encontrado"));
 
-        // Limpiar relaciones existentes
-        existingTurno.getDueniosList().clear();
-        existingTurno.getMascotasList().clear();
+        // 2. Limpiar relaciones en la base de datos (primero en los lados inversos)
+        if (existingTurno.getMascotasList() != null) {
+            for (Mascotas mascota : existingTurno.getMascotasList()) {
+                mascota.getTurnosMascotas().remove(existingTurno);
+            }
+            existingTurno.getMascotasList().clear();
+        }
 
-        // Actualizar campos básicos
-        existingTurno.setFecha(turnoDto.getFecha());
-        existingTurno.setEstados(turnoDto.getEstados());
+        if (existingTurno.getDueniosList() != null) {
+            for (Duenios duenio : existingTurno.getDueniosList()) {
+                duenio.getTurnosDuenios().remove(existingTurno);
+            }
+            existingTurno.getDueniosList().clear();
+        }
 
-        // Manejar nuevas relaciones (similar a tu método save)
-        // ...
+        // 3. Guardar el turno sin relaciones (para asegurar que está en el contexto de persistencia)
+        Turnos savedTurno = turnosRepository.save(existingTurno);
 
-        return turnosRepository.save(existingTurno);
+        // 4. Actualizar campos básicos
+        savedTurno.setFecha(turnoDto.getFecha());
+        savedTurno.setEstados(turnoDto.getEstados());
+
+        // 5. Reestablecer relación con dueño
+        if (turnoDto.getDuenioId() != null) {
+            Duenios duenio = dueniosRepository.findById(turnoDto.getDuenioId())
+                    .orElseThrow(() -> new RuntimeException("Dueño no encontrado"));
+
+            savedTurno.getDueniosList().add(duenio);
+            if (duenio.getTurnosDuenios() == null) {
+                duenio.setTurnosDuenios(new ArrayList<>());
+            }
+            duenio.getTurnosDuenios().add(savedTurno);
+            dueniosRepository.save(duenio);
+        }
+
+        // 6. Reestablecer relación con mascotas
+        if (turnoDto.getMascotaIds() != null && !turnoDto.getMascotaIds().isEmpty()) {
+            List<Mascotas> mascotas = mascotasRepository.findAllById(turnoDto.getMascotaIds());
+            for (Mascotas mascota : mascotas) {
+                savedTurno.getMascotasList().add(mascota);
+                if (mascota.getTurnosMascotas() == null) {
+                    mascota.setTurnosMascotas(new ArrayList<>());
+                }
+                mascota.getTurnosMascotas().add(savedTurno);
+                mascotasRepository.save(mascota);
+            }
+        }
+
+        // 7. Guardar el turno con las nuevas relaciones
+        return turnosRepository.save(savedTurno);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<TurnoDto> getTurnoDtoById(Long id) {
+        return turnosRepository.findById(id)
+                .map(turnoMapper::toDto);
     }
 
     @Override

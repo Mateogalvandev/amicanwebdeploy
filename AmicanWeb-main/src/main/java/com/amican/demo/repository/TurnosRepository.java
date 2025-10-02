@@ -3,6 +3,8 @@ package com.amican.demo.repository;
 import com.amican.demo.model.Duenios;
 import com.amican.demo.model.Turnos;
 import com.amican.demo.model.enums.Estados;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,6 +24,7 @@ public interface TurnosRepository extends JpaRepository<Turnos, Long> {
 
     @Query("SELECT t FROM Turnos t JOIN t.mascotasList m WHERE m.id = :mascotaId")
     List<Turnos> findByMascotasListId(@Param("mascotaId") Long mascotaId);
+
 
 
 }

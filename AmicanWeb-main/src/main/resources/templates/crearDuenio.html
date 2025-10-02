@@ -7,6 +7,9 @@
     <link rel="stylesheet" th:href="@{/css/crearDuenio.css}"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+
 </head>
 <body>
 <div class="app-container">
@@ -223,8 +226,7 @@
                                             name="dni"
                                             th:field="*{dni}"
                                             class="form-input"
-                                            placeholder="Ej: 12345678"
-                                            required
+                                            placeholder="En caso de ser necesario"
                                             pattern="[0-9]{7,8}"
                                             maxlength="8"
                                     >
@@ -252,177 +254,170 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Elementos del DOM para el toggle responsive
-        const sidebar = document.getElementById('sidebar');
-        const toggleBtn = document.getElementById('toggleSidebar');
-        const mobileToggle = document.getElementById('mobileToggle');
-        const overlay = document.getElementById('overlay');
-        const mainContent = document.querySelector('.main-content');
+    // Elementos del DOM para el toggle responsive
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const mobileToggle = document.getElementById('mobileToggle');
+    const overlay = document.getElementById('overlay');
+    const mainContent = document.querySelector('.main-content');
 
-        // Toggle sidebar en desktop (solo funciona en pantallas grandes)
-        if (toggleBtn && sidebar) {
-            toggleBtn.addEventListener('click', function() {
-                // Solo funciona en desktop (ancho mayor a 768px)
-                if (window.innerWidth > 768) {
-                    sidebar.classList.toggle('collapsed');
-                }
-            });
-        }
-
-        // Toggle sidebar en móviles
-        if (mobileToggle) {
-            mobileToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('show');
-                overlay.classList.toggle('active');
-            });
-        }
-
-        // Cerrar sidebar al hacer clic en el overlay
-        if (overlay) {
-            overlay.addEventListener('click', function() {
-                sidebar.classList.remove('show');
-                overlay.classList.remove('active');
-            });
-        }
-
-        // Dropdown functionality
-        const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
-        dropdownToggles.forEach(toggle => {
-            toggle.addEventListener('click', function() {
-                const dropdown = this.nextElementSibling;
-                const arrow = this.querySelector('.dropdown-arrow');
-
-                if (dropdown && dropdown.classList.contains('nav-dropdown')) {
-                    dropdown.classList.toggle('show');
-                    arrow.classList.toggle('rotated');
-                }
-            });
-        });
-
-        // User menu dropdown
-        const userMenuBtn = document.getElementById('userMenuBtn');
-        const userDropdown = document.getElementById('userDropdown');
-
-        if (userMenuBtn && userDropdown) {
-            userMenuBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                userDropdown.classList.toggle('show');
-            });
-
-            document.addEventListener('click', function() {
-                userDropdown.classList.remove('show');
-            });
-        }
-
-        // Form validation
-        const form = document.getElementById('crearDuenoForm');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                // Clear previous errors
-                document.querySelectorAll('.form-error').forEach(error => {
-                    error.textContent = '';
-                });
-                document.querySelectorAll('.form-input').forEach(input => {
-                    input.classList.remove('error');
-                });
-
-                let isValid = true;
-
-                // Validate nombre
-                const nombre = document.getElementById('nombre');
-                if (!nombre.value.trim()) {
-                    showError('nombre', 'El nombre es requerido');
-                    isValid = false;
-                } else if (nombre.value.trim().length < 2) {
-                    showError('nombre', 'El nombre debe tener al menos 2 caracteres');
-                    isValid = false;
-                }
-
-                // Validate apellido
-                const apellido = document.getElementById('apellido');
-                if (!apellido.value.trim()) {
-                    showError('apellido', 'El apellido es requerido');
-                    isValid = false;
-                } else if (apellido.value.trim().length < 2) {
-                    showError('apellido', 'El apellido debe tener al menos 2 caracteres');
-                    isValid = false;
-                }
-
-                // Validate celular
-                const celular = document.getElementById('celular');
-                const phoneRegex = /^[+]?[0-9\s\-()]{8,20}$/;
-                if (!celular.value.trim()) {
-                    showError('celular', 'El celular es requerido');
-                    isValid = false;
-                } else if (!phoneRegex.test(celular.value.trim())) {
-                    showError('celular', 'Formato de celular inválido');
-                    isValid = false;
-                }
-
-                // Validate DNI
-                const dni = document.getElementById('dni');
-                const dniRegex = /^[0-9]{7,8}$/;
-                if (!dni.value.trim()) {
-                    showError('dni', 'El DNI es requerido');
-                    isValid = false;
-                } else if (!dniRegex.test(dni.value.trim())) {
-                    showError('dni', 'El DNI debe tener 7 u 8 dígitos');
-                    isValid = false;
-                }
-
-                if (isValid) {
-                    // If validation passes, submit the form
-                    this.submit();
-                }
-            });
-        }
-
-        function showError(fieldId, message) {
-            const errorElement = document.getElementById(fieldId + '-error');
-            const inputElement = document.getElementById(fieldId);
-
-            if (errorElement) {
-                errorElement.textContent = message;
-            }
-            if (inputElement) {
-                inputElement.classList.add('error');
-            }
-        }
-
-        // Real-time validation
-        document.querySelectorAll('.form-input').forEach(input => {
-            input.addEventListener('blur', function() {
-                const errorElement = document.getElementById(this.id + '-error');
-                if (errorElement && errorElement.textContent) {
-                    // Re-validate on blur if there was an error
-                    form.dispatchEvent(new Event('submit'));
-                }
-            });
-
-            input.addEventListener('input', function() {
-                // Clear error styling on input
-                this.classList.remove('error');
-                const errorElement = document.getElementById(this.id + '-error');
-                if (errorElement) {
-                    errorElement.textContent = '';
-                }
-            });
-        });
-
-        // Manejo responsive al redimensionar
-        function handleResize() {
+    // Toggle sidebar en desktop (solo funciona en pantallas grandes)
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function() {
             if (window.innerWidth > 768) {
-                // En desktop, asegurarse que el sidebar esté visible y sin overlay
-                sidebar.classList.remove('show');
-                overlay.classList.remove('active');
+                sidebar.classList.toggle('collapsed');
             }
-        }
+        });
+    }
 
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Ejecutar al cargar
+    // Toggle sidebar en móviles
+    if (mobileToggle) {
+        mobileToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('active');
+        });
+    }
+
+    // Cerrar sidebar al hacer clic en el overlay
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('active');
+        });
+    }
+
+    // Dropdown functionality
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const dropdown = this.nextElementSibling;
+            const arrow = this.querySelector('.dropdown-arrow');
+
+            if (dropdown && dropdown.classList.contains('nav-dropdown')) {
+                dropdown.classList.toggle('show');
+                arrow.classList.toggle('rotated');
+            }
+        });
     });
+
+    // User menu dropdown
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdown = document.getElementById('userDropdown');
+
+    if (userMenuBtn && userDropdown) {
+        userMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function() {
+            userDropdown.classList.remove('show');
+        });
+    }
+
+    // Form validation
+    const form = document.getElementById('crearDuenoForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Clear previous errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            let isValid = true;
+
+            // Validate nombre
+            const nombre = document.getElementById('nombre');
+            if (!nombre.value.trim()) {
+                showError('nombre', 'El nombre es requerido');
+                isValid = false;
+            } else if (nombre.value.trim().length < 2) {
+                showError('nombre', 'El nombre debe tener al menos 2 caracteres');
+                isValid = false;
+            }
+
+            // Validate apellido
+            const apellido = document.getElementById('apellido');
+            if (!apellido.value.trim()) {
+                showError('apellido', 'El apellido es requerido');
+                isValid = false;
+            } else if (apellido.value.trim().length < 2) {
+                showError('apellido', 'El apellido debe tener al menos 2 caracteres');
+                isValid = false;
+            }
+
+            // Validate celular
+            const celular = document.getElementById('celular');
+            const phoneRegex = /^[+]?[0-9\s\-()]{8,20}$/;
+            if (!celular.value.trim()) {
+                showError('celular', 'El celular es requerido');
+                isValid = false;
+            } else if (!phoneRegex.test(celular.value.trim())) {
+                showError('celular', 'Formato de celular inválido');
+                isValid = false;
+            }
+
+            // Validate DNI (opcional)
+            const dni = document.getElementById('dni');
+            const dniRegex = /^[0-9]{7,8}$/;
+            if (dni.value.trim() && !dniRegex.test(dni.value.trim())) {
+                showError('dni', 'El DNI debe tener 7 u 8 dígitos si se ingresa');
+                isValid = false;
+            }
+
+            if (isValid) {
+                this.submit();
+            }
+        });
+    }
+
+    function showError(fieldId, message) {
+        const errorElement = document.getElementById(fieldId + '-error');
+        const inputElement = document.getElementById(fieldId);
+
+        if (errorElement) {
+            errorElement.textContent = message;
+        }
+        if (inputElement) {
+            inputElement.classList.add('error');
+        }
+    }
+
+    // Real-time validation
+    document.querySelectorAll('.form-input').forEach(input => {
+        input.addEventListener('blur', function() {
+            const errorElement = document.getElementById(this.id + '-error');
+            if (errorElement && errorElement.textContent) {
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        input.addEventListener('input', function() {
+            this.classList.remove('error');
+            const errorElement = document.getElementById(this.id + '-error');
+            if (errorElement) {
+                errorElement.textContent = '';
+            }
+        });
+    });
+
+    // Manejo responsive al redimensionar
+    function handleResize() {
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('active');
+        }
+    }
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+});
+
 </script>
 </body>
 </html>

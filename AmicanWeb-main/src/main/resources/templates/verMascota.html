@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es"  xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
 
 
@@ -11,53 +11,6 @@
     <link rel="stylesheet" th:href="@{/css/verMascotas.css}"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Estilos mejorados para los botones de acción */
-        .actions-cell {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-
-        .btn-action {
-            border: none;
-            border-radius: 6px;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-edit {
-            background-color: #3B82F6;
-            color: white;
-        }
-
-        .btn-edit:hover {
-            background-color: #2563EB;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
-        }
-
-        .btn-delete {
-            background-color: #EF4444;
-            color: white;
-        }
-
-        .btn-delete:hover {
-            background-color: #DC2626;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);
-        }
-
-        .btn-action i {
-            font-size: 16px;
-        }
-    </style>
 </head>
 <body>
 <div class="app-container">
@@ -103,11 +56,11 @@
                         <i class="fas fa-list"></i>
                         <span class="nav-text">Ver Clientes</span>
                     </a>
-                    <a th:href="@{/duenios/crear}" class="nav-subitem active" data-section="clientes-create">
+                    <a th:href="@{/duenios/crear}" class="nav-subitem" data-section="clientes-create">
                         <i class="fas fa-user-plus"></i>
                         <span class="nav-text">Crear Cliente</span>
                     </a>
-                    <a th:href="@{/mascotas/ver}" class="nav-subitem" data-section="mascotas-list">
+                    <a th:href="@{/mascotas/ver}" class="nav-subitem active" data-section="mascotas-list">
                         <i class="fas fa-dog"></i>
                         <span class="nav-text">Ver Mascotas</span>
                     </a>
@@ -366,35 +319,7 @@
 
 <script th:src="@{/js/verMascotas.js}"></script>
 <script>
-    function eliminarMascota(id) {
-    if (confirm('¿Estás seguro de que quieres eliminar esta mascota? Esta acción no se puede deshacer.')) {
-        // Obtener token CSRF
-        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-        // Crear formulario
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/mascotas/eliminar/' + id;
-
-        // Agregar inputs ocultos
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = '_csrf';
-        csrfInput.value = csrfToken;
-        form.appendChild(csrfInput);
-
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'DELETE';
-        form.appendChild(methodInput);
-
-        // Agregar al documento y enviar
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
 </script>
 
 </body>

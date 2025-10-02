@@ -850,6 +850,14 @@
     /* Added comprehensive responsive design */
     /* Mobile First - Responsive Design */
     @media (max-width: 768px) {
+       .sidebar .sidebar-header {
+           display: none;
+       }
+
+      .sidebar-nav {
+              padding-top: var(--spacing-4);
+          }
+
       .sidebar {
         width: 280px;
       }

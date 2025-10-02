@@ -26,6 +26,33 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* Eliminar subrayado de elementos de navegación */
+.sidebar-nav a,
+.sidebar-nav a:hover,
+.sidebar-nav a:focus,
+.sidebar-nav a:active {
+    text-decoration: none !important;
+}
+
+.sidebar-nav button,
+.sidebar-nav button:hover,
+.sidebar-nav button:focus,
+.sidebar-nav button:active {
+    text-decoration: none !important;
+}
+
+/* Asegurar que los elementos dentro de los enlaces no tengan subrayado */
+.nav-subitem,
+.nav-subitem * {
+    text-decoration: none !important;
+}
+
+.nav-item,
+.nav-item * {
+    text-decoration: none !important;
+}
+
     </style>
 </head>
 <body>
@@ -51,7 +78,7 @@
                         <i class="fas fa-list"></i>
                         <span class="nav-text">Ver Agenda</span>
                     </a>
-                    <a th:href="@{/turnos/crear}" class="nav-subitem" data-section="agenda-create">
+                    <a th:href="@{/turnos/crear}" class="nav-subitem active" data-section="agenda-create">
                         <i class="fas fa-plus"></i>
                         <span class="nav-text">Nueva Cita</span>
                     </a>
@@ -70,7 +97,7 @@
                         <i class="fas fa-list"></i>
                         <span class="nav-text">Ver Clientes</span>
                     </a>
-                    <a th:href="@{/duenios/crear}" class="nav-subitem active" data-section="clientes-create">
+                    <a th:href="@{/duenios/crear}" class="nav-subitem" data-section="clientes-create">
                         <i class="fas fa-user-plus"></i>
                         <span class="nav-text">Crear Cliente</span>
                     </a>

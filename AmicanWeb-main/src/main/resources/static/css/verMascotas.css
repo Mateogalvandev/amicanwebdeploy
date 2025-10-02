@@ -1569,3 +1569,47 @@
         font-size: 0.875rem;
     }
 
+    /* Botones de acción */
+    .actions-cell {
+                    display: flex;
+                    gap: var(--spacing-2);
+                    justify-content: center;
+                }
+
+                .btn-action {
+                    border: none;
+                    border-radius: var(--radius-md);
+                    padding: var(--spacing-2);
+                    cursor: pointer;
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 32px;
+                    height: 32px;
+                }
+
+                .btn-edit {
+                    background-color: var(--amican-blue);
+                    color: white;
+                }
+
+                .btn-edit:hover {
+                    background-color: var(--amican-blue-dark);
+                    transform: translateY(-1px);
+                    box-shadow: var(--shadow-sm);
+                }
+
+                .btn-delete {
+                    background-color: var(--red-500);
+                    color: white;
+                }
+
+                .btn-delete:hover {
+                    background-color: var(--red-600);
+                    transform: translateY(-1px);
+                    box-shadow: var(--shadow-sm);
+                }
+

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seleccionar Mascotas - Amican</title>
+    <title>Editar Turno - Amican</title>
     <link rel="stylesheet" th:href="@{/css/crearAgenda.css}"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,7 +19,6 @@
         </div>
 
         <nav class="sidebar-nav">
-            <!-- Simplified navigation without horizontal dropdown -->
             <div class="nav-group">
                 <button class="nav-item dropdown-toggle" data-section="agenda">
                     <i class="fas fa-calendar-alt"></i>
@@ -27,7 +26,7 @@
                     <i class="fas fa-chevron-down dropdown-arrow"></i>
                 </button>
                 <div class="nav-dropdown">
-                    <a th:href="@{/turnos/ver}" class="nav-subitem" data-section="agenda-manage">
+                    <a th:href="@{/turnos/ver}" class="nav-subitem active" data-section="agenda-manage">
                         <i class="fas fa-list"></i>
                         <span class="nav-text">Ver Agenda</span>
                     </a>
@@ -38,7 +37,6 @@
                 </div>
             </div>
 
-            <!-- Replaced Empleados with Clientes section -->
             <div class="nav-group">
                 <button class="nav-item dropdown-toggle" data-section="clientes">
                     <i class="fas fa-users"></i>
@@ -54,7 +52,7 @@
                         <i class="fas fa-user-plus"></i>
                         <span class="nav-text">Crear Cliente</span>
                     </a>
-                    <a th:href="@{/mascotas/ver}" class="nav-subitem active" data-section="mascotas-list">
+                    <a th:href="@{/mascotas/ver}" class="nav-subitem" data-section="mascotas-list">
                         <i class="fas fa-dog"></i>
                         <span class="nav-text">Ver Mascotas</span>
                     </a>
@@ -74,12 +72,9 @@
         </div>
     </aside>
 
-    <!-- Overlay para móviles -->
     <div id="overlay" class="overlay"></div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Header -->
         <header class="header">
             <div class="header-left">
                 <button id="mobileToggle" class="mobile-toggle">
@@ -125,23 +120,25 @@
             </div>
         </header>
 
-        <!-- Content -->
         <main class="content">
             <div class="section-header">
-                <h2><i class="fas fa-calendar-plus"></i> Crear Turno</h2>
-                <a th:href="@{/turnos/crear}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Volver a dueños
+                <h2><i class="fas fa-edit"></i> Editar Turno</h2>
+                <a th:href="@{/turnos/ver}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a Agenda
                 </a>
             </div>
 
-            <form th:action="@{/turnos/crear}" method="post" th:object="${turnoDto}">
-                <!-- Hidden field para duenioId -->
-                <input type="hidden" name="duenioId" th:value="${duenio.idDuenio}">
+            <!-- Formulario de edición -->
+            <form th:action="@{/turnos/editar}" method="post" th:object="${turnoDto}">
+                <!-- ID del turno a editar -->
+                <input type="hidden" name="id" th:value="${turnoDto.idTurnos}" />
+                <!-- Dueño (fijo, no editable) -->
+                <input type="hidden" name="duenioId" th:value="${duenio.idDuenio}" />
 
                 <div class="form-section">
                     <div class="section-title">
-                        <h3><i class="fas fa-user"></i> Dueño Seleccionado</h3>
-                        <p class="section-subtitle">Información del cliente</p>
+                        <h3><i class="fas fa-user"></i> Dueño</h3>
+                        <p class="section-subtitle">Cliente asociado al turno</p>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -184,8 +181,9 @@
                              style="padding: 1.5rem; border: 1px solid #e5e7eb; border-radius: 0.75rem; margin-bottom: 1rem; background: white;">
 
                             <label style="display: flex; align-items: center; gap: 1rem; cursor: pointer;">
+                                <!-- ✅ Checkbox con th:field para preselección automática -->
                                 <input type="checkbox"
-                                       name="mascotaIds"
+                                       th:field="*{mascotaIds}"
                                        th:value="${mascota.idMascotas}"
                                        style="width: 20px; height: 20px;">
 
@@ -220,23 +218,50 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="fecha">Fecha y Hora *</label>
-                            <input type="datetime-local" id="fecha" name="fecha" th:field="*{fecha}" required
+                            <!-- ✅ Fecha prellenada si existe -->
+                            <input type="datetime-local"
+                                   id="fecha"
+                                   name="fecha"
+                                   th:value="${fechaFormateada}"
+                                   required
                                    style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem;">
                         </div>
                     </div>
                 </div>
 
+                <div class="form-section">
+                    <div class="section-title">
+                        <h3><i class="fas fa-tag"></i> Estado del Turno</h3>
+                        <p class="section-subtitle">Selecciona el estado actual del turno</p>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="estados">Estado *</label>
+                            <select id="estados" name="estados" required
+                                    style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem;">
+                                <option value="">-- Seleccionar estado --</option>
+                                <option th:each="estado : ${T(com.amican.demo.model.enums.Estados).values()}"
+                                        th:value="${estado}"
+                                        th:text="${estado}"
+                                        th:selected="${estado == turnoDto.estados}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="history.back()">
+                    <a th:href="@{/turnos/ver}" class="btn btn-secondary">
                         <i class="fas fa-times"></i> Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary" th:disabled="${mascotas.isEmpty()}">
-                        <i class="fas fa-calendar-check"></i> Crear Turno
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar Cambios
                     </button>
                 </div>
             </form>
 
-            <!-- Mensajes de error/success -->
+            <!-- Mensajes -->
             <div th:if="${error}" class="alert alert-error"
                  style="background: #fee2e2; border: 1px solid #fecaca; color: #dc2626; padding: 1rem; border-radius: 0.5rem; margin: 1.5rem 0;">
                 <i class="fas fa-exclamation-circle"></i>
@@ -254,7 +279,9 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // SIDEBAR Y HEADER
+        // ... (todo el código de sidebar, dropdowns, etc. es idéntico al original) ...
+        // Puedes copiarlo tal cual desde tu HTML original
+
         const sidebar = document.getElementById('sidebar');
         const toggleSidebar = document.getElementById('toggleSidebar');
         const mobileToggle = document.getElementById('mobileToggle');
@@ -263,12 +290,10 @@
         const userDropdown = document.getElementById('userDropdown');
         const logoBtn = document.getElementById('logoBtn');
 
-        // Detectar si estamos en móvil
         function isMobile() {
             return window.innerWidth <= 768;
         }
 
-        // 1. Toggle en desktop: colapsar sidebar
         if (toggleSidebar) {
             toggleSidebar.addEventListener('click', function () {
                 if (!isMobile()) {
@@ -277,54 +302,44 @@
             });
         }
 
-        // 2. Toggle en móvil: mostrar/ocultar sidebar con overlay
         if (mobileToggle && overlay) {
             mobileToggle.addEventListener('click', function () {
                 sidebar.classList.add('show');
                 overlay.classList.add('active');
             });
-
             overlay.addEventListener('click', function () {
                 sidebar.classList.remove('show');
                 overlay.classList.remove('active');
             });
         }
 
-        // Logo vuelve al dashboard (opcional)
         if (logoBtn) {
             logoBtn.addEventListener('click', function () {
                 window.location.href = '/';
             });
         }
 
-        // 3. Dropdowns del sidebar
         const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
         dropdownToggles.forEach(toggle => {
             toggle.addEventListener('click', function (e) {
                 e.preventDefault();
                 const dropdown = this.nextElementSibling;
                 const arrow = this.querySelector('.dropdown-arrow');
-
-                // Cerrar otros
                 dropdownToggles.forEach(other => {
                     if (other !== toggle) {
                         other.nextElementSibling.classList.remove('show');
                         other.querySelector('.dropdown-arrow').classList.remove('rotated');
                     }
                 });
-
-                // Toggle actual
                 dropdown.classList.toggle('show');
                 arrow.classList.toggle('rotated');
             });
         });
 
-        // 4. Dropdown de usuario
         if (userMenuBtn && userDropdown) {
             userMenuBtn.addEventListener('click', function () {
                 userDropdown.classList.toggle('show');
             });
-
             document.addEventListener('click', function (e) {
                 if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
                     userDropdown.classList.remove('show');
@@ -332,7 +347,6 @@
             });
         }
 
-        // 5. Manejo de redimensionado
         function handleResize() {
             if (!isMobile()) {
                 sidebar.classList.remove('show');
@@ -345,31 +359,36 @@
         window.addEventListener('resize', handleResize);
         handleResize();
 
-        // 6. Validación del formulario
+        // Validación de formulario
         const form = document.querySelector('form');
         if (form) {
             form.addEventListener('submit', function(e) {
                 const checkboxes = document.querySelectorAll('input[name="mascotaIds"]:checked');
                 if (checkboxes.length === 0) {
                     e.preventDefault();
-                    alert('Debes seleccionar al menos una mascota para continuar');
+                    alert('Debes seleccionar al menos una mascota');
                     return false;
                 }
-
                 const fechaInput = document.getElementById('fecha');
                 if (!fechaInput.value) {
                     e.preventDefault();
-                    alert('Debes seleccionar una fecha y hora para el turno');
+                    alert('Debes seleccionar una fecha y hora');
                     return false;
                 }
             });
         }
 
-        // 7. Mejorar experiencia de checkboxes
+        // Efecto visual en checkboxes
         const checkboxes = document.querySelectorAll('input[name="mascotaIds"]');
         checkboxes.forEach(checkbox => {
+            // Marcar visualmente si ya está seleccionado al cargar
+            const item = checkbox.closest('.mascota-item');
+            if (checkbox.checked) {
+                item.style.borderColor = '#3b82f6';
+                item.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+            }
+
             checkbox.addEventListener('change', function() {
-                const item = this.closest('.mascota-item');
                 if (this.checked) {
                     item.style.borderColor = '#3b82f6';
                     item.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
